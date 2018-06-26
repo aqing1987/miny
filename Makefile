@@ -1,20 +1,27 @@
 CXX = g++
-CXXFLAGS = -Wall
+CXXFLAGS = -g -Wall
 PROG = miny
 
-
-ifeq ($(shell uname),Darwin)
+ifeq ($(shell uname), Darwin)
 	LDLIBS = -framework OpenGL -framework GLUT
 else
 	LDLIBS = -lglut -lGL -lGLU
 endif
 
+INCLDDIRS = -I. -I./inc
+LOCAL_SRCS := main.cpp Timer.cpp Replay.cpp Field.cpp scores.cpp\
+		common.cpp
+
+.PHONY: all
 all: $(PROG)
 
-$(PROG): Timer.o main.o Replay.o Field.o scores.o common.o
-	${CXX} -o $@ $^ ${LDLIBS}
+%.o: %.c
+	$(CXX) $(CXXFLAGS) -c $< -o $@ $(INCLDDIRS)
 
-main.o: main.cpp 
+$(PROG): $(LOCAL_SRCS)
+	$(CXX) $(CXXFLAGS) -o $@ $^ ${LDLIBS} $(INCLDDIRS)
 
+
+.PHONY: clean
 clean:
 	rm -f $(PROG) *.o
